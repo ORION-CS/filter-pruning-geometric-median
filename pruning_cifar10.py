@@ -19,10 +19,10 @@ model_names = sorted(name for name in models.__dict__
 
 parser = argparse.ArgumentParser(description='Trains ResNeXt on CIFAR or ImageNet',
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('data_path', type=str, help='Path to dataset')
-parser.add_argument('--dataset', type=str, choices=['cifar10', 'cifar100', 'imagenet', 'svhn', 'stl10'],
+parser.add_argument('--data_path', default='data/cifar-10-python', type=str, help='Path to dataset')
+parser.add_argument('--dataset', default='cifar10', type=str, choices=['cifar10', 'cifar100', 'imagenet', 'svhn', 'stl10'],
                     help='Choose between Cifar10/100 and ImageNet.')
-parser.add_argument('--arch', metavar='ARCH', default='resnet18', choices=model_names,
+parser.add_argument('--arch', metavar='ARCH', default='CifarResNet', choices=model_names,
                     help='model architecture: ' + ' | '.join(model_names) + ' (default: resnext29_8_64)')
 # Optimization options
 parser.add_argument('--epochs', type=int, default=300, help='Number of epochs to train.')
@@ -36,7 +36,7 @@ parser.add_argument('--gammas', type=float, nargs='+', default=[0.1, 0.1],
                     help='LR is multiplied by gamma on schedule, number of gammas should be equal to schedule')
 # Checkpoints
 parser.add_argument('--print_freq', default=200, type=int, metavar='N', help='print frequency (default: 200)')
-parser.add_argument('--save_path', type=str, default='./', help='Folder to save checkpoints and log.')
+parser.add_argument('--save_path', type=str, default='snapshot', help='Folder to save checkpoints and log.')
 parser.add_argument('--resume', default='', type=str, metavar='PATH', help='path to latest checkpoint (default: none)')
 parser.add_argument('--start_epoch', default=0, type=int, metavar='N', help='manual epoch number (useful on restarts)')
 parser.add_argument('--evaluate', dest='evaluate', action='store_true', help='evaluate model on validation set')
@@ -112,8 +112,8 @@ def main():
         [transforms.ToTensor(), transforms.Normalize(mean, std)])
 
     if args.dataset == 'cifar10':
-        train_data = dset.CIFAR10(args.data_path, train=True, transform=train_transform, download=True)
-        test_data = dset.CIFAR10(args.data_path, train=False, transform=test_transform, download=True)
+        train_data = dset.CIFAR10(args.data_path, train=True, transform=train_transform, download=False)
+        test_data = dset.CIFAR10(args.data_path, train=False, transform=test_transform, download=False)
         num_classes = 10
     elif args.dataset == 'cifar100':
         train_data = dset.CIFAR100(args.data_path, train=True, transform=train_transform, download=True)
